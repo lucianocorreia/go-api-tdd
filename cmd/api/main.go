@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
+	"github.com/lucianocorreia/go-api-tdd/store/postgres"
 )
 
 const (
@@ -13,12 +14,30 @@ const (
 )
 
 func main() {
-	_, err := connectToDB(dbDriver)
+	db, err := connectToDB(dbDriver)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	srv, err := setup(db)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Hello, World!")
+	if err = srv.run(":3001"); err != nil {
+		panic(err)
+	}
+}
+
+func setup(db *sql.DB) (*server, error) {
+	store := postgres.NewPostgresStore(db)
+
+	srv := NewServer(store)
+
+	srv.setupRoutes()
+
+	return srv, nil
 }
 
 func connectToDB(driver string) (*sql.DB, error) {
