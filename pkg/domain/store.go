@@ -5,4 +5,7 @@ type Store interface {
 	DeleteUserByID(id int64) error
 	FindUserByEmail(email string) (*User, error)
 	FindUserByID(id int64) (*User, error)
+
+	// tests
+	DeleteAllUsers() error
 }

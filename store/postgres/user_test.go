@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/lucianocorreia/go-api-tdd/pkg/domain"
@@ -100,8 +99,6 @@ func TestFindUserByID(t *testing.T) {
 		t.Fatalf("error creating user: %s", err.Error())
 	}
 
-	fmt.Println(createdUser.ID)
-
 	foundUser, err := store.FindUserByID(createdUser.ID)
 	if err != nil {
 		t.Fatalf("error finding user: %s", err.Error())
@@ -125,4 +122,25 @@ func TestFindUserByID(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error deleting user: %s", err.Error())
 	}
+}
+
+func TestDeleteAllUsers(t *testing.T) {
+	store := NewPostgresStore(testDB)
+
+	user := domain.User{
+		Name:     "Jown Doe",
+		Email:    "teste@email.com",
+		Password: "password",
+	}
+
+	_, err := store.CreateUser(&user)
+	if err != nil {
+		t.Fatalf("error creating user: %s", err.Error())
+	}
+
+	err = store.DeleteAllUsers()
+	if err != nil {
+		t.Fatalf("error deleting all users: %s", err.Error())
+	}
+
 }

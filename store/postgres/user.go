@@ -16,14 +16,14 @@ const (
 )
 
 // CreateUser creates a new user in the database.
-func (r *postgresStore) CreateUser(user *domain.User) (*domain.User, error) {
+func (s *postgresStore) CreateUser(user *domain.User) (*domain.User, error) {
 	hashedPassword, err := common.HashPassword(user.Password)
 	if err != nil {
 		return nil, err
 	}
 	user.Password = hashedPassword
 
-	err = r.db.QueryRow(sqlCreateUser, user.Name, user.Email, user.Password).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	err = s.db.QueryRow(sqlCreateUser, user.Name, user.Email, user.Password).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +32,8 @@ func (r *postgresStore) CreateUser(user *domain.User) (*domain.User, error) {
 }
 
 // DeleteUserByID deletes a user from the database by its ID.
-func (r *postgresStore) DeleteUserByID(id int64) error {
-	_, err := r.db.Exec(sqlDeleteUserByID, id)
+func (s *postgresStore) DeleteUserByID(id int64) error {
+	_, err := s.db.Exec(sqlDeleteUserByID, id)
 	if err != nil {
 		return err
 	}
@@ -42,9 +42,9 @@ func (r *postgresStore) DeleteUserByID(id int64) error {
 }
 
 // FindUserByEmail finds a user from the database by its email.
-func (r *postgresStore) FindUserByEmail(email string) (*domain.User, error) {
+func (s *postgresStore) FindUserByEmail(email string) (*domain.User, error) {
 	user := &domain.User{}
-	err := r.db.QueryRow(sqlFindUserByEmail, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	err := s.db.QueryRow(sqlFindUserByEmail, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrUserNotFound
@@ -56,9 +56,9 @@ func (r *postgresStore) FindUserByEmail(email string) (*domain.User, error) {
 }
 
 // FindUserByID finds a user from the database by its ID.
-func (r *postgresStore) FindUserByID(ID int64) (*domain.User, error) {
+func (s *postgresStore) FindUserByID(ID int64) (*domain.User, error) {
 	user := &domain.User{}
-	err := r.db.QueryRow(sqlFindUserByID, ID).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	err := s.db.QueryRow(sqlFindUserByID, ID).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrUserNotFound
@@ -67,4 +67,13 @@ func (r *postgresStore) FindUserByID(ID int64) (*domain.User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *postgresStore) DeleteAllUsers() error {
+	_, err := s.db.Exec("DELETE FROM users")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

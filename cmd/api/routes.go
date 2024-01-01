@@ -7,11 +7,7 @@ func (s *server) setupRoutes() {
 
 	v1 := mux.Group("/api/v1")
 
-	v1.POST("/users/create", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	v1.POST("/users/create", s.createUser)
 
 	s.router = mux
 

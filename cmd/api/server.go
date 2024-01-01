@@ -18,7 +18,7 @@ func NewServer(store domain.Store) *server {
 }
 
 func (s *server) routes() *gin.Engine {
-	if s.router != nil {
+	if s.router == nil {
 		s.setupRoutes()
 	}
 
