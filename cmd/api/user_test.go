@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/lucianocorreia/go-api-tdd/pkg/security"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -38,7 +40,12 @@ func TestCreateUser(t *testing.T) {
 		},
 	}
 
-	srv := NewServer(testStore)
+	jwt, err := security.NewJWT(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	srv := NewServer(testStore, jwt)
 	ts := newTestServer(srv.routes())
 
 	for _, tc := range testCases {

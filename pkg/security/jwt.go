@@ -13,7 +13,7 @@ type jwtToken struct {
 }
 
 // NewJWT creates a new JWT token.
-func NewJWT(key string) (*jwtToken, error) {
+func NewJWT(key string) (domain.JWT, error) {
 	if len(key) < 32 {
 		return nil, domain.ErrInvalidKey
 	}

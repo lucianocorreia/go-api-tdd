@@ -24,3 +24,9 @@ func (p *JWTPayload) Valid() error {
 
 	return nil
 }
+
+// JWT represents a JWT token.
+type JWT interface {
+	CreateToken(user *User, duration time.Duration) (*JWTPayload, error)
+	VerifyToken(tokenString string) (*JWTPayload, error)
+}
