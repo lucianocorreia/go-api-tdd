@@ -48,3 +48,27 @@ func (s *server) createUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (s *server) loginUser(c *gin.Context) {
+	req := struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.Email == "" || req.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "email and password are required"})
+		return
+	}
+
+	_, err := s.store.FindUserByEmail(req.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+}
